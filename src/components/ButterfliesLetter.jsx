@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 const letterParagraphs = [
   "To the butterflies we feel in our bellies",
@@ -10,26 +10,76 @@ const letterParagraphs = [
   "If those butterflies never quite figure out how to settle down, I honestly don’t think I will be complaining."
 ];
 
-export default function ButterfliesLetter() {
+export default function ButterfliesLetter({
+  instant = false,
+  speed = 1,
+  animationKey = 0
+}) {
+  // Precompute cadence and delays for each word
+  const structuredParagraphs = useMemo(() => {
+    let currentDelay = 120; // Initial gentle delay
+
+    return letterParagraphs.map((paragraph, pIndex) => {
+      const words = paragraph.split(' ').filter(Boolean);
+      const isHeader = pIndex === 0;
+
+      const timedWords = words.map((word) => {
+        const delay = Math.round(currentDelay / speed);
+
+        // Natural speech pacing
+        const hasFullStop = /[.?!]$/.test(word);
+        const hasComma = /[,;:]$/.test(word);
+
+        if (hasFullStop) {
+          currentDelay += 230;
+        } else if (hasComma) {
+          currentDelay += 130;
+        } else {
+          currentDelay += isHeader ? 80 : 55;
+        }
+
+        return { word, delay };
+      });
+
+      // Paragraph transition breath
+      currentDelay += isHeader ? 350 : 260;
+
+      return {
+        id: pIndex,
+        isHeader,
+        words: timedWords
+      };
+    });
+  }, [speed]);
+
   return (
     <article
-      data-testid="figma-frame-1-2"
-      className="relative w-[390px] h-[651px] bg-parchment pt-[50px] pb-[50px] px-[30px] box-border overflow-hidden select-text flex flex-col justify-start"
-      aria-label="To the butterflies we feel in our bellies"
+      key={animationKey}
+      className="w-full max-w-xl sm:max-w-2xl md:max-w-3xl font-corsiva text-charcoal-muted text-[14px] sm:text-[16px] md:text-[18px] leading-[23px] sm:leading-[27px] md:leading-[31px] text-justify select-text tracking-normal"
+      aria-label={letterParagraphs.join('\n\n')}
     >
-      <div
-        data-testid="figma-content-1-3"
-        className="w-[330px] min-w-0 font-corsiva text-[12px] leading-[19px] text-charcoal-muted text-justify"
-      >
-        {letterParagraphs.map((paragraph, index) => (
-          <p
-            key={index}
-            className={`m-0 p-0 ${index < letterParagraphs.length - 1 ? 'mb-[19px]' : ''}`}
-          >
-            {paragraph}
-          </p>
-        ))}
-      </div>
+      {structuredParagraphs.map((paragraph) => (
+        <p
+          key={paragraph.id}
+          className={`m-0 p-0 ${
+            paragraph.isHeader
+              ? 'mb-5 sm:mb-6 md:mb-7 font-normal'
+              : 'mb-4 sm:mb-5 md:mb-6'
+          } last:mb-0`}
+        >
+          {paragraph.words.map(({ word, delay }, wIndex) => (
+            <React.Fragment key={wIndex}>
+              <span
+                className={instant ? 'word-revealed-instant' : 'word-reveal'}
+                style={instant ? undefined : { animationDelay: `${delay}ms` }}
+              >
+                {word}
+              </span>
+              {wIndex < paragraph.words.length - 1 && ' '}
+            </React.Fragment>
+          ))}
+        </p>
+      ))}
     </article>
   );
 }
