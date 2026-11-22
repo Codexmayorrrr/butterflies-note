@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Monotype Corsiva';
+  src: local('Monotype Corsiva'), url('/fonts/MTCORSVA.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Monotype Corsiva';
+  src: local('Monotype Corsiva'), url('/fonts/MTCORSVA.TTF') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --color-parchment: #E3D2B4;
+  --color-charcoal-muted: #5C5C5C;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f0ede6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
