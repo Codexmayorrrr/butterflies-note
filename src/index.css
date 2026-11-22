@@ -21,7 +21,6 @@
 :root {
   --color-parchment: #E3D2B4;
   --color-charcoal-muted: #5C5C5C;
-  --ease-out-fluid: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 html, body {
@@ -35,30 +34,36 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-@keyframes fluidWordFade {
+/* Mechanical strike with fluid physical damping into parchment */
+@keyframes mechanicalFluidAppear {
   0% {
     opacity: 0;
-    transform: translateY(5px);
-    filter: blur(2.5px);
+    transform: translateY(5px) scale(0.96);
+    filter: blur(1.5px);
   }
-  60% {
-    opacity: 0.85;
-    filter: blur(0.5px);
+  28% {
+    opacity: 1;
+    transform: translateY(-0.75px) scale(1.018);
+    filter: blur(0px);
+  }
+  65% {
+    transform: translateY(0.2px) scale(0.998);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
+    transform: translateY(0) scale(1);
+    filter: none;
   }
 }
 
 .word-reveal {
   display: inline-block;
   opacity: 0;
-  will-change: opacity, transform, filter;
-  animation-name: fluidWordFade;
-  animation-duration: 480ms;
-  animation-timing-function: var(--ease-out-fluid);
+  transform-origin: center bottom;
+  will-change: opacity, transform;
+  animation-name: mechanicalFluidAppear;
+  animation-duration: 380ms;
+  animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
   animation-fill-mode: forwards;
 }
 

@@ -10,39 +10,36 @@ const letterParagraphs = [
   "If those butterflies never quite figure out how to settle down, I honestly don’t think I will be complaining."
 ];
 
-export default function ButterfliesLetter({
-  instant = false,
-  speed = 1,
-  animationKey = 0
-}) {
-  // Precompute cadence and delays for each word
+export default function ButterfliesLetter({ instant = false }) {
+  // Precompute deliberate, mechanical-poetic cadence
   const structuredParagraphs = useMemo(() => {
-    let currentDelay = 120; // Initial gentle delay
+    let currentDelay = 400; // Poetic opening pause
 
     return letterParagraphs.map((paragraph, pIndex) => {
       const words = paragraph.split(' ').filter(Boolean);
       const isHeader = pIndex === 0;
 
       const timedWords = words.map((word) => {
-        const delay = Math.round(currentDelay / speed);
+        const delay = currentDelay;
 
-        // Natural speech pacing
+        // Punctuation and cadence detection
         const hasFullStop = /[.?!]$/.test(word);
         const hasComma = /[,;:]$/.test(word);
+        const hasDash = /[-—]$/.test(word);
 
         if (hasFullStop) {
-          currentDelay += 230;
-        } else if (hasComma) {
-          currentDelay += 130;
+          currentDelay += 480; // Full contemplative breath after sentence
+        } else if (hasComma || hasDash) {
+          currentDelay += 260; // Natural phrase pause
         } else {
-          currentDelay += isHeader ? 80 : 55;
+          currentDelay += isHeader ? 150 : 120; // Deliberate mechanical cadence
         }
 
         return { word, delay };
       });
 
-      // Paragraph transition breath
-      currentDelay += isHeader ? 350 : 260;
+      // Paragraph transition interval
+      currentDelay += isHeader ? 700 : 550;
 
       return {
         id: pIndex,
@@ -50,11 +47,10 @@ export default function ButterfliesLetter({
         words: timedWords
       };
     });
-  }, [speed]);
+  }, []);
 
   return (
     <article
-      key={animationKey}
       className="w-full max-w-xl sm:max-w-2xl md:max-w-3xl font-corsiva text-charcoal-muted text-[14px] sm:text-[16px] md:text-[18px] leading-[23px] sm:leading-[27px] md:leading-[31px] text-justify select-text tracking-normal"
       aria-label={letterParagraphs.join('\n\n')}
     >
