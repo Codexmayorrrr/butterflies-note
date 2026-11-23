@@ -1,44 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import ButterfliesLetter from './components/ButterfliesLetter';
 
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
   const audioRef = useRef(null);
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    audio.volume = 0.6;
-
-    // 1. Try immediate unmuted autoplay on load
-    const promise = audio.play();
-    if (promise !== undefined) {
-      promise
-        .then(() => {
-          // If browser grants unmuted autoplay, immediately begin the letter
-          setIsOpen(true);
-        })
-        .catch(() => {
-          // Browser policy blocked silent autoplay without user gesture.
-          // Listen for any immediate touch/click/keypress anywhere on window to open instantly
-          const autoUnlock = () => {
-            audio.play().catch(() => {});
-            setIsOpen(true);
-            ['pointerdown', 'touchstart', 'keydown'].forEach((e) =>
-              window.removeEventListener(e, autoUnlock)
-            );
-          };
-
-          ['pointerdown', 'touchstart', 'keydown'].forEach((e) =>
-            window.addEventListener(e, autoUnlock, { once: true, passive: true })
-          );
-        });
-    }
-  }, []);
-
   const handleOpen = () => {
     if (audioRef.current) {
+      audioRef.current.volume = 0.6;
       audioRef.current.play().catch(() => {});
     }
     setIsOpen(true);
@@ -46,12 +15,9 @@ export default function App() {
 
   return (
     <main
-      onClick={!isOpen ? handleOpen : undefined}
-      className={`relative min-h-screen w-full bg-parchment flex flex-col items-center justify-center px-6 py-12 sm:px-12 sm:py-16 md:px-20 md:py-20 transition-all duration-500 ${
-        !isOpen ? 'cursor-pointer select-none' : ''
-      }`}
+      className="relative min-h-screen w-full bg-parchment flex flex-col items-center justify-center px-6 py-12 sm:px-12 sm:py-16 md:px-20 md:py-20 transition-all duration-500"
     >
-      {/* Background audio track */}
+      {/* Background audio track: "Beautiful Night" by Adekunle Gold */}
       <audio
         ref={audioRef}
         src="/audio/beautiful-night.mp3"
@@ -62,22 +28,25 @@ export default function App() {
       />
 
       {!isOpen ? (
-        <div className="flex flex-col items-center justify-center gap-3 text-charcoal-muted text-center animate-[fadeIn_0.6s_ease-out]">
-          <svg
-            className="w-10 h-10 text-[#5C5C5C] hover:scale-105 transition-transform duration-300"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <rect x="2" y="4" width="20" height="16" rx="2" />
-            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-          </svg>
-          <p className="font-corsiva text-[22px] sm:text-[26px] tracking-wide text-[#4A4A4A] m-0">
-            Click anywhere to open
+        /* Figma Node 14:2 ("iPhone 13 & 14 - 2" Welcome Screen) */
+        <div
+          data-testid="welcome-screen-14-2"
+          onClick={handleOpen}
+          className="flex flex-col items-center justify-center gap-[10px] cursor-pointer select-none animate-[fadeIn_0.5s_ease-out] group"
+        >
+          {/* Node 14:8 ("Ellipse 1") */}
+          <div className="relative w-[60px] h-[60px] rounded-full overflow-hidden shadow-sm ring-1 ring-black/5 group-hover:scale-105 group-active:scale-95 transition-transform duration-200">
+            <img
+              src="/images/pretty-face.png"
+              alt="Pretty face"
+              className="w-full h-full object-cover"
+              draggable="false"
+            />
+          </div>
+
+          {/* Node 14:5 ("Click on my pretty face to open") */}
+          <p className="font-corsiva text-[13px] sm:text-[14px] leading-[19px] text-charcoal-muted text-center m-0 group-hover:text-[#3E3E3E] transition-colors duration-200">
+            Click on my pretty face to open
           </p>
         </div>
       ) : (
