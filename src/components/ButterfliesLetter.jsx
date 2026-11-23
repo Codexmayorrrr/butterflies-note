@@ -38,8 +38,8 @@ export default function ButterfliesLetter({ instant = false }) {
         return { word, delay };
       });
 
-      // Paragraph transition interval
-      currentDelay += isHeader ? 700 : 550;
+      // Paragraph transition interval (prolonged pause after the title)
+      currentDelay += isHeader ? 1800 : 550;
 
       return {
         id: pIndex,
