@@ -63,15 +63,22 @@ export default function App() {
 
       {!isOpen ? (
         <div className="flex flex-col items-center justify-center gap-3 text-charcoal-muted text-center animate-[fadeIn_0.6s_ease-out]">
-          <div className="w-14 h-14 rounded-full border border-[#8C7A5D]/40 bg-[#D7C4A5]/40 flex items-center justify-center text-2xl shadow-sm hover:scale-105 transition-transform duration-300">
-            ✉
-          </div>
+          <svg
+            className="w-10 h-10 text-[#5C5C5C] hover:scale-105 transition-transform duration-300"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
           <p className="font-corsiva text-[22px] sm:text-[26px] tracking-wide text-[#4A4A4A] m-0">
             Click anywhere to open
           </p>
-          <span className="text-[11px] font-mono text-[#5C5C5C]/70 tracking-widest uppercase">
-            ♫ Beautiful Night • Adekunle Gold
-          </span>
         </div>
       ) : (
         <ButterfliesLetter />
