@@ -41,7 +41,7 @@ html, body {
     transform: translateY(5px) scale(0.96);
     filter: blur(1.5px);
   }
-  28% {
+  26% {
     opacity: 1;
     transform: translateY(-0.75px) scale(1.018);
     filter: blur(0px);
@@ -62,7 +62,7 @@ html, body {
   transform-origin: center bottom;
   will-change: opacity, transform;
   animation-name: mechanicalFluidAppear;
-  animation-duration: 380ms;
+  animation-duration: 440ms;
   animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
   animation-fill-mode: forwards;
 }

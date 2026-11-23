@@ -11,9 +11,9 @@ const letterParagraphs = [
 ];
 
 export default function ButterfliesLetter({ instant = false }) {
-  // Precompute deliberate, mechanical-poetic cadence
+  // Precompute natural human reading cadence
   const structuredParagraphs = useMemo(() => {
-    let currentDelay = 400; // Poetic opening pause
+    let currentDelay = 500; // Gentle opening stillness
 
     return letterParagraphs.map((paragraph, pIndex) => {
       const words = paragraph.split(' ').filter(Boolean);
@@ -22,24 +22,33 @@ export default function ButterfliesLetter({ instant = false }) {
       const timedWords = words.map((word) => {
         const delay = currentDelay;
 
-        // Punctuation and cadence detection
+        // Clean characters for length calculation
+        const cleanLength = word.replace(/[^a-zA-Z0-9]/g, '').length;
+
+        // Base fixation time scaled naturally by word complexity/length
+        // Short function words (~220ms), average words (~280-340ms), long words (~400-460ms)
+        const baseWordTime = isHeader
+          ? Math.max(260, Math.min(500, 240 + cleanLength * 28))
+          : Math.max(210, Math.min(460, 190 + cleanLength * 26));
+
+        currentDelay += baseWordTime;
+
+        // Punctuation and sentence breathing pauses
         const hasFullStop = /[.?!]$/.test(word);
-        const hasComma = /[,;:]$/.test(word);
+        const hasCommaOrSemi = /[,;:]$/.test(word);
         const hasDash = /[-—]$/.test(word);
 
         if (hasFullStop) {
-          currentDelay += 480; // Full contemplative breath after sentence
-        } else if (hasComma || hasDash) {
-          currentDelay += 260; // Natural phrase pause
-        } else {
-          currentDelay += isHeader ? 150 : 120; // Deliberate mechanical cadence
+          currentDelay += 750; // Deep reflective pause at sentence boundary
+        } else if (hasCommaOrSemi || hasDash) {
+          currentDelay += 380; // Natural phrase breathing pause
         }
 
         return { word, delay };
       });
 
-      // Paragraph transition interval (prolonged pause after the title)
-      currentDelay += isHeader ? 1800 : 550;
+      // Stanza transition pause (prolonged 2.2s after the title, 950ms between paragraphs)
+      currentDelay += isHeader ? 2200 : 950;
 
       return {
         id: pIndex,
