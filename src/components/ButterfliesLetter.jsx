@@ -7,7 +7,8 @@ const letterParagraphs = [
   "I don’t think you realize how uncommon it is to meet someone who feels like a story people only tell by firelight, the kind where everyone leans in a little closer because nobody is completely sure if the person was real or just a rumor the village made up to feel luckier. If they ever write one about you, I hope they get the small details right. The way you make it so easy to forget whatever else was supposed to be on my mind.",
   "Omosimisola, the name that holds quite a bit of volume. Orekelewa, the pretty one, the one of fables and myths, the one my ancestors clearly spent extra time plotting over before they let our paths cross.",
   "So the next time I tell you that you are pretty and you feel like brushing it off, maybe don’t. Take my word for it, since you don’t have my eyes to see what I see. Let it sit for a second. You don’t have to argue with a fact.",
-  "If those butterflies never quite figure out how to settle down, I honestly don’t think I will be complaining."
+  "If those butterflies never quite figure out how to settle down, I honestly don’t think I will be complaining.",
+  "Happy Locverssary Raqee ❤"
 ];
 
 export default function ButterfliesLetter({ instant = false }) {
@@ -30,6 +31,7 @@ export default function ButterfliesLetter({ instant = false }) {
     return letterParagraphs.map((paragraph, pIndex) => {
       const words = paragraph.split(' ').filter(Boolean);
       const isHeader = pIndex === 0;
+      const isSignoff = pIndex === letterParagraphs.length - 1;
 
       const timedWords = words.map((word) => {
         const delay = currentDelay;
@@ -37,11 +39,14 @@ export default function ButterfliesLetter({ instant = false }) {
         // Clean characters for length calculation
         const cleanLength = word.replace(/[^a-zA-Z0-9]/g, '').length;
 
-        // Unhurried, deliberate word-by-word reveal for the title (480ms - 680ms)
-        // so every single word is distinctly seen appearing one after another
-        const baseWordTime = isHeader
-          ? Math.max(480, Math.min(680, 440 + cleanLength * 26))
-          : Math.max(210, Math.min(460, 190 + cleanLength * 26));
+        let baseWordTime;
+        if (isHeader) {
+          baseWordTime = Math.max(480, Math.min(680, 440 + cleanLength * 26));
+        } else if (isSignoff) {
+          baseWordTime = Math.max(340, Math.min(540, 300 + cleanLength * 28));
+        } else {
+          baseWordTime = Math.max(210, Math.min(460, 190 + cleanLength * 26));
+        }
 
         currentDelay += baseWordTime;
 
@@ -51,20 +56,30 @@ export default function ButterfliesLetter({ instant = false }) {
         const hasDash = /[-—]$/.test(word);
 
         if (hasFullStop) {
-          currentDelay += 750; // Deep reflective pause at sentence boundary
+          currentDelay += 750;
         } else if (hasCommaOrSemi || hasDash) {
-          currentDelay += 380; // Natural phrase breathing pause
+          currentDelay += 380;
         }
 
         return { word, delay };
       });
 
-      // Prolonged 2.4s pause after the title finishes before paragraph 1 begins
-      currentDelay += isHeader ? 2400 : 950;
+      // Transitions:
+      // Header: +2400ms pause
+      // Pre-signoff: +1800ms quiet pause
+      // Stanzas: +950ms
+      if (isHeader) {
+        currentDelay += 2400;
+      } else if (pIndex === letterParagraphs.length - 2) {
+        currentDelay += 1800; // Poetic pause before "Happy Locverssary Raqee ❤"
+      } else if (!isSignoff) {
+        currentDelay += 950;
+      }
 
       return {
         id: pIndex,
         isHeader,
+        isSignoff,
         words: timedWords
       };
     });
@@ -81,30 +96,42 @@ export default function ButterfliesLetter({ instant = false }) {
           className={`m-0 p-0 ${
             paragraph.isHeader
               ? 'mb-5 sm:mb-6 md:mb-7 font-normal'
+              : paragraph.isSignoff
+              ? 'mt-8 sm:mt-10 md:mt-12 text-right not-italic text-[16px] sm:text-[18px] md:text-[21px]'
               : 'mb-4 sm:mb-5 md:mb-6'
           } last:mb-0`}
         >
-          {paragraph.words.map(({ word, delay }, wIndex) => (
-            <React.Fragment key={wIndex}>
-              <span
-                className={
-                  instant
-                    ? 'word-revealed-instant'
-                    : isStarted
-                    ? 'word-reveal'
-                    : 'opacity-0'
-                }
-                style={
-                  instant || !isStarted
-                    ? undefined
-                    : { animationDelay: `${delay}ms` }
-                }
-              >
-                {word}
-              </span>
-              {wIndex < paragraph.words.length - 1 && ' '}
-            </React.Fragment>
-          ))}
+          {paragraph.words.map(({ word, delay }, wIndex) => {
+            const isHeart = word.includes('❤');
+
+            return (
+              <React.Fragment key={wIndex}>
+                <span
+                  className={
+                    instant
+                      ? 'word-revealed-instant'
+                      : isStarted
+                      ? 'word-reveal'
+                      : 'opacity-0'
+                  }
+                  style={
+                    instant || !isStarted
+                      ? undefined
+                      : { animationDelay: `${delay}ms` }
+                  }
+                >
+                  {isHeart ? (
+                    <span className="text-[#C0392B] inline-block ml-1 scale-110">
+                      ❤
+                    </span>
+                  ) : (
+                    word
+                  )}
+                </span>
+                {wIndex < paragraph.words.length - 1 && ' '}
+              </React.Fragment>
+            );
+          })}
         </p>
       ))}
     </article>
