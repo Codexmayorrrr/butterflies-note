@@ -16,17 +16,17 @@ export default function ButterfliesLetter({ instant = false }) {
 
   useEffect(() => {
     if (!instant) {
-      // Ensure the canvas and fonts are settled before the very first word reveals
+      // Gentle 300ms stillness before the first word glides in
       const timer = setTimeout(() => {
         setIsStarted(true);
-      }, 400);
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [instant]);
 
-  // Precompute natural human reading cadence
+  // Natural, fluid reading cadence with steady rhythm and gentle breathing
   const structuredParagraphs = useMemo(() => {
-    let currentDelay = 200; // Initial breath after isStarted activates
+    let currentDelay = 150;
 
     return letterParagraphs.map((paragraph, pIndex) => {
       const words = paragraph.split(' ').filter(Boolean);
@@ -35,45 +35,41 @@ export default function ButterfliesLetter({ instant = false }) {
 
       const timedWords = words.map((word) => {
         const delay = currentDelay;
-
-        // Clean characters for length calculation
         const cleanLength = word.replace(/[^a-zA-Z0-9]/g, '').length;
 
+        // Balanced reading pace: smooth, continuous, and unhurried without feeling sluggish
         let baseWordTime;
         if (isHeader) {
-          baseWordTime = Math.max(480, Math.min(680, 440 + cleanLength * 26));
+          baseWordTime = 220 + cleanLength * 18;
         } else if (isSignoff) {
-          baseWordTime = Math.max(340, Math.min(540, 300 + cleanLength * 28));
+          baseWordTime = 180 + cleanLength * 16;
         } else {
-          baseWordTime = Math.max(210, Math.min(460, 190 + cleanLength * 26));
+          baseWordTime = 125 + cleanLength * 12;
         }
 
         currentDelay += baseWordTime;
 
-        // Punctuation and sentence breathing pauses
+        // Subtle, natural breathing at punctuation
         const hasFullStop = /[.?!]$/.test(word);
         const hasCommaOrSemi = /[,;:]$/.test(word);
         const hasDash = /[-—]$/.test(word);
 
         if (hasFullStop) {
-          currentDelay += 750;
+          currentDelay += 320;
         } else if (hasCommaOrSemi || hasDash) {
-          currentDelay += 380;
+          currentDelay += 160;
         }
 
         return { word, delay };
       });
 
-      // Transitions:
-      // Header: +2400ms pause
-      // Pre-signoff: +1800ms quiet pause
-      // Stanzas: +950ms
+      // Inter-stanza cadence
       if (isHeader) {
-        currentDelay += 2400;
+        currentDelay += 1400; // Poetic pause after title
       } else if (pIndex === letterParagraphs.length - 2) {
-        currentDelay += 1800; // Poetic pause before "Happy Locverssary Raqee ❤"
+        currentDelay += 900; // Pause before sign-off
       } else if (!isSignoff) {
-        currentDelay += 950;
+        currentDelay += 450;
       }
 
       return {
@@ -121,7 +117,7 @@ export default function ButterfliesLetter({ instant = false }) {
                   }
                 >
                   {isHeart ? (
-                    <span className="text-[#C0392B] inline-block ml-1 scale-110">
+                    <span className="text-[#C0392B] inline-block ml-1">
                       ❤
                     </span>
                   ) : (

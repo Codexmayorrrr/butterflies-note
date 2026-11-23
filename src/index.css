@@ -35,40 +35,33 @@ html, body {
 }
 
 /* 
- * Ultra-optimized composite-only animation (opacity + translate3d + scale)
- * Zero paint costs, zero blur filters, zero layer-memory explosion.
- * Runs at rock-solid 60-120fps on older/low-power devices.
+ * Silky-smooth, unidirectional fade-and-glide entrance.
+ * Zero bounce, zero overshoot, zero subpixel scaling, zero baseline jumping.
  */
-@keyframes mechanicalFluidAppear {
-  0% {
+@keyframes smoothWordAppear {
+  from {
     opacity: 0;
-    transform: translate3d(0, 4px, 0) scale(0.97);
+    transform: translateY(3px);
   }
-  26% {
+  to {
     opacity: 1;
-    transform: translate3d(0, -0.6px, 0) scale(1.015);
-  }
-  65% {
-    transform: translate3d(0, 0.15px, 0) scale(0.999);
-  }
-  100% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translateY(0);
   }
 }
 
 .word-reveal {
   display: inline-block;
+  vertical-align: baseline;
   opacity: 0;
-  transform-origin: center bottom;
-  animation-name: mechanicalFluidAppear;
-  animation-duration: 420ms;
-  animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+  animation-name: smoothWordAppear;
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   animation-fill-mode: both;
 }
 
 .word-revealed-instant {
   display: inline-block;
+  vertical-align: baseline;
   opacity: 1;
   transform: none;
 }
