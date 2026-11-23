@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 const letterParagraphs = [
   "To the butterflies we feel in our bellies",
@@ -11,9 +11,21 @@ const letterParagraphs = [
 ];
 
 export default function ButterfliesLetter({ instant = false }) {
+  const [isStarted, setIsStarted] = useState(instant);
+
+  useEffect(() => {
+    if (!instant) {
+      // Ensure the canvas and fonts are settled before the very first word reveals
+      const timer = setTimeout(() => {
+        setIsStarted(true);
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [instant]);
+
   // Precompute natural human reading cadence
   const structuredParagraphs = useMemo(() => {
-    let currentDelay = 500; // Gentle opening stillness
+    let currentDelay = 200; // Initial breath after isStarted activates
 
     return letterParagraphs.map((paragraph, pIndex) => {
       const words = paragraph.split(' ').filter(Boolean);
@@ -25,10 +37,10 @@ export default function ButterfliesLetter({ instant = false }) {
         // Clean characters for length calculation
         const cleanLength = word.replace(/[^a-zA-Z0-9]/g, '').length;
 
-        // Base fixation time scaled naturally by word complexity/length
-        // Short function words (~220ms), average words (~280-340ms), long words (~400-460ms)
+        // Unhurried, deliberate word-by-word reveal for the title (480ms - 680ms)
+        // so every single word is distinctly seen appearing one after another
         const baseWordTime = isHeader
-          ? Math.max(260, Math.min(500, 240 + cleanLength * 28))
+          ? Math.max(480, Math.min(680, 440 + cleanLength * 26))
           : Math.max(210, Math.min(460, 190 + cleanLength * 26));
 
         currentDelay += baseWordTime;
@@ -47,8 +59,8 @@ export default function ButterfliesLetter({ instant = false }) {
         return { word, delay };
       });
 
-      // Stanza transition pause (prolonged 2.2s after the title, 950ms between paragraphs)
-      currentDelay += isHeader ? 2200 : 950;
+      // Prolonged 2.4s pause after the title finishes before paragraph 1 begins
+      currentDelay += isHeader ? 2400 : 950;
 
       return {
         id: pIndex,
@@ -75,8 +87,18 @@ export default function ButterfliesLetter({ instant = false }) {
           {paragraph.words.map(({ word, delay }, wIndex) => (
             <React.Fragment key={wIndex}>
               <span
-                className={instant ? 'word-revealed-instant' : 'word-reveal'}
-                style={instant ? undefined : { animationDelay: `${delay}ms` }}
+                className={
+                  instant
+                    ? 'word-revealed-instant'
+                    : isStarted
+                    ? 'word-reveal'
+                    : 'opacity-0'
+                }
+                style={
+                  instant || !isStarted
+                    ? undefined
+                    : { animationDelay: `${delay}ms` }
+                }
               >
                 {word}
               </span>

@@ -64,7 +64,7 @@ html, body {
   animation-name: mechanicalFluidAppear;
   animation-duration: 440ms;
   animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
-  animation-fill-mode: forwards;
+  animation-fill-mode: both;
 }
 
 .word-revealed-instant {
